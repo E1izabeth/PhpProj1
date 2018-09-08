@@ -1,0 +1,27 @@
+		
+body {
+    background-color: #dfdfdf;
+}
+
+table {
+    margin: auto;
+    border: 1px solid green;
+}
+
+td {
+    border: 1px solid grey;
+    text-align: center;
+}
+
+tbody {
+    border: 1px solid grey;
+}
+
+thead {
+    border: 1px solid grey;
+}
+
+img {
+    display: block;
+    margin: auto;
+}

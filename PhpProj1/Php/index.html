@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title> Lab1 </title>
+    <meta charset="utf-8"/>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            background-color: #dfdfdf;
+        }
+
+        header {
+            color: #000000;
+            background-color: #dfdfdf;
+            font-size: 40px;
+            font-style: sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+
+        .content {
+            background: #dfdfdf;
+            flex-direction: column;
+        }
+
+        .areas {
+            text-align: center;
+            background: #dfdfdf;
+        }
+
+        .input-forms {
+            font-style: sans-serif;
+            text-align: center;
+            font-size: 21px;
+        }
+
+        .r_value {
+            padding-top: 25%;
+            padding-bottom: 25%;
+        }
+
+        header > p:first-of-type {
+            color: blue;
+        }
+
+        #variant {
+            color: black;
+        }
+
+        input:focus {
+            border: 1px solid blue;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <p>Кузенкова Елизавета P3217</p>
+        <p id="variant">Вариант 28708 </p>
+    </header>
+    <div class="content">
+        <div class="areas">
+            <!--img src="./img/areas.png"/ -->
+            <img src="https://se.ifmo.ru/~s243891/imageZoneTest.php?page=1" width="500" height="400" />'
+        </div>
+            <div class="input-forms">
+                <form method="POST" action="handler.php" onsubmit="return submitThisForm(event, this.form)">
+                    <div>
+                        <label>X</label>
+
+                        <input id="x_value" type="text" onblur="is_x_valid()" name="x" required placeholder="(-5;5)" />
+                        <script type="text/javascript">
+                            function is_x_valid() {
+                                var textBox = document.getElementById("x_value");
+                                var text = textBox.value;
+                                var pattern = new RegExp("^[+-]?[0-5]?[.]?[0-9]+$");
+                                if (pattern.test(text) && text !== "" && -5 < parseFloat(text) && parseFloat(text) < 5) {
+                                    textBox.style.borderColor = "green";
+                                    return true;
+                                }
+                                else {
+                                    textBox.style.borderColor = "red";
+                                    return false;
+                                }
+                            }
+                        </script>
+                    </div>
+                    <div>
+                        <label>Y</label>
+                        <input name="y" type="radio" value="-3">
+                        <label>-3</label>
+                        <input name="y" type="radio" value="-2">
+                        <label>-2</label>
+                        <input name="y" type="radio" value="-1">
+                        <label>-1</label>
+                        <input name="y" type="radio" value="0">
+                        <label>0</label>
+                        <input name="y" type="radio" value="1">
+                        <label>1</label>
+                        <input name="y" type="radio" value="2">
+                        <label>2</label>
+                        <input name="y" type="radio" value="3">
+                        <label>3</label>
+                        <input name="y" type="radio" value="4">
+                        <label>4</label>
+                        <input name="y" type="radio" value="5">
+                        <label>5</label>
+                    </div>
+                    <div>
+                        <label>R</label>
+                        <select id="r_value" type="text" name="r">
+                            <option selected="selected"></option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+
+                        <script type="text/javascript">
+                            function is_r_valid() {
+                                var r_sel = document.getElementById("r_value");
+                                if (r_sel.selectedIndex !== 0) {
+                                    var r_value = r_sel.options[r_sel.selectedIndex].value;
+                                    return true;
+                                }
+                                else {
+                                    return false;
+                                }
+                            }
+                        </script>
+                    </div>
+                    <input type="submit" value="Отправить">
+                    <script type="text/javascript">
+
+                        function submitThisForm(event, form) {
+                            var y_radio = document.getElementsByName("y");
+                            var y_val = 100;
+                            for (var i = y_radio.length - 1; i >= 0; i--) {
+                                if (y_radio[i].checked) {
+                                    y_val = y_radio[i].value;
+                                    break;
+                                }
+                            }
+                            if (!is_x_valid()) {
+                                alert("Введите корректное значение X");
+                                return false;
+                            }
+                            else if (y_val === 100) {
+                                alert("Введите значение Y");
+                                return false;
+                            }
+                            else if (!is_r_valid()) {
+                                alert("Введите значение R");
+                                return false;
+                            }
+                            else {
+                            	return true;
+                                //form.submit();
+                            }
+                        }
+                    </script>
+                </form>
+            </div>
+        </div>
+    </body>
+    </html>

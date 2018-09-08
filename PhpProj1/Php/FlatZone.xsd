@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="FlatZone"
+    targetNamespace="http://tempuri.org/FlatZone.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://tempuri.org/FlatZone.xsd"
+    xmlns:mstns="http://tempuri.org/FlatZone.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="FlatZone" type="ZoneType"/>
+
+  <xs:complexType name="ZoneType">
+    <xs:choice maxOccurs="4">
+      <xs:element name="Triangle" type="TriangleType"/>
+      <xs:element name="Circle" type="CircleType"/>
+      <xs:element name="Rectangle" type="RectangleType"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="ShapeType" abstract="true" >
+  </xs:complexType>
+
+  <xs:complexType name="TriangleType" >
+    <xs:complexContent>
+      <xs:extension base="ShapeType">
+        <xs:attribute name="X1" type="xs:double" use="required"/>
+        <xs:attribute name="Y1" type="xs:double" use="required"/>
+        <xs:attribute name="X2" type="xs:double" use="required"/>
+        <xs:attribute name="Y2" type="xs:double" use="required"/>
+        <xs:attribute name="X3" type="xs:double" use="required"/>
+        <xs:attribute name="Y3" type="xs:double" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="RectangleType" >
+    <xs:complexContent>
+      <xs:extension base="ShapeType">
+        <xs:attribute name="X" type="xs:double" use="required"/>
+        <xs:attribute name="Y" type="xs:double" use="required"/>
+        <xs:attribute name="W" type="xs:double" use="required"/>
+        <xs:attribute name="H" type="xs:double" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="CircleType" >
+    <xs:complexContent>
+      <xs:extension base="ShapeType">
+        <xs:attribute name="Quarter" type="xs:double" use="required"/>
+        <xs:attribute name="R" type="xs:double" use="required"/>
+        <xs:attribute name="OX" type="xs:double" use="required"/>
+        <xs:attribute name="OY" type="xs:double" use="required"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+</xs:schema>
