@@ -144,8 +144,9 @@ $zoneRenderer->visitRdiv2($rp);
 
 header('Content-Disposition: inline; filename="imageTest.png"');
 header('Content-Type: image/png');
-// header('Content-Length: ' . $bb->size);
-$bb->writeCompressed();
+$png = $bb->makeCompressed();
+header('Content-Length: ' . $png->getDataSize());
+echo $png->packData();
 
 
 ?>
