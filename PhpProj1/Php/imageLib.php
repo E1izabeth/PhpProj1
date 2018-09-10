@@ -66,7 +66,7 @@ class PngChunkBuff
 {
 	private $chunkType;
 	private $data = array();
-
+	
 	function __construct($a, $b, $c, $d)
 	{
 		$t = array();
@@ -109,18 +109,32 @@ class PngChunkBuff
 	{
 		$crc = $this->computePngCrc(array_merge($this->chunkType, $this->data));
 
-		return pack("C*", array_merge(
-			unpack("C*", pack("V", count($this->data))),
+		return call_user_func_array('pack', array_merge(
+			array("C*"),
+			unpack("C*", pack("N", count($this->data))),
 			$this->chunkType,
 			$this->data,
-			unpack("C*", pack("V", $crc))
+			unpack("C*", pack("N", $crc))
 		));			
+	}
+	
+	public function packData()
+	{
+		return call_user_func_array('pack', array_merge(
+			array("C*"),
+			$this->data
+		));
+	}
+	
+	public function getDataSize()
+	{
+		return count($this->data);
 	}
 }
 
-function writePng(&$data)
+function makePng(&$data)
 {
-	echo "<pre>";
+	$r = new PngChunkBuff(0, 0, 0, 0);
 	$w = count($data);
 	$h = count($data[0]);
 
@@ -148,36 +162,38 @@ function writePng(&$data)
 			$scanlines[$y][$x + 1] = $indexedData[$x][$y];
 	}
 
-	$dataBytes = call_user_func_array('array_merge', $scanlines);
+	$dataBytes = call_user_func_array('array_merge', array_reverse($scanlines));
 	$rawData = call_user_func_array('pack', array_merge(array("C*"), $dataBytes));
-	$compressedData = gzcompress(gzdeflate($rawData));
+	$compressedData = gzdeflate($rawData);
 	
-	echo pack("C*", 137, 80, 78, 71, 13, 10, 26, 10); // PNG header
+	$r->add(pack("C*", 137, 80, 78, 71, 13, 10, 26, 10)); // PNG header
 	
 	$hdr = new PngChunkBuff(73, 72, 68, 82);
-	$hdr->add(pack("V", $w));
-	$hdr->add(pack("V", $h));
+	$hdr->add(pack("N", $w));
+	$hdr->add(pack("N", $h));
 	$hdr->add(pack("C", 8)); // scanline entry size in bits 
 	$hdr->add(pack("C", 3)); // colour type is indexed-colour
 	$hdr->add(pack("C", 0)); // compression method deflate
 	$hdr->add(pack("C", 0)); // compression method deflate
 	$hdr->add(pack("C", 0)); // compression method deflate
-	echo $hdr->getChunkBytes();
+	$r->add($hdr->getChunkBytes());
 
-	$plte = new PngChunkBuff(73, 68, 65, 84);
+	$plte= new PngChunkBuff(80, 76, 84, 69);
 	for ($i = 0; $i < count($colors); $i++)
 	{
 		$p = $colors[$i];
-		$plte->add(pack("C*", ($p >> 0) & 0xff, ($p >> 8) & 0xff, ($p >> 16) & 0xff));
+		$plte->add(pack("C*", ($p >> 16) & 0xff, ($p >> 8) & 0xff, ($p >> 0) & 0xff));
 	}
-	echo $plte->getChunkBytes();
+	$r->add($plte->getChunkBytes());
 
-	$idat= new PngChunkBuff(80, 76, 84, 69);
+	$idat = new PngChunkBuff(73, 68, 65, 84);
 	$idat->add($compressedData);
-	echo $idat->getChunkBytes();
+	$r->add($idat->getChunkBytes());
 
 	$end = new PngChunkBuff(73, 69, 78, 68);
-	echo $end->getChunkBytes();
+	$r->add($end->getChunkBytes());
+	
+	return $r;
 }
 
 function setPixel(&$pp, $x, $y, $c)
@@ -235,30 +251,28 @@ function drawLineDDA(&$pp, $x1, $y1, $x2, $y2, $c)
       $iX2 = (int)$x2;
       $iY2 = (int)$y2;
  
-      // (2) ƒлина и высота линии
+      // (2) line projection lengths per axis
       $deltaX = abs($iX1 - $iX2);
       $deltaY = abs($iY1 - $iY2);
  
-      // (3) —читаем минимальное количество итераций, необходимое
-      // дл€ отрисовки отрезка. ¬ыбира€ максимум из длины и высоты
-      // линии, обеспечиваем св€зность линии
+      // (3) computing number of steps required
       $length = max($deltaX, $deltaY);
-		// особый случай, на экране закрашиваетс€ ровно один пиксел
+      // case for one-pixel-sized circle
       if ($length == 0)
       {
             setPixel($pp, $iX1, $iY1, $c);
             return;
       }
  
-      // (4) ¬ычисл€ем приращени€ на каждом шаге по ос€м абсцисс и ординат
+      // (4) computing delta per axis
       $dX = ($x2 - $x1) / $length;
       $dY = ($y2 - $y1) / $length;
  
-      // (5) Ќачальные значени€
+      // (5) initial values
       $x = $x1;
       $y = $y1;
  
-      // ќсновной цикл
+      // main loop
       $length++;
       while ($length--)
       {
@@ -589,9 +603,9 @@ class Bitmap
 		writeBmp($this->data);
 	}
 
-	public function writeCompressed()
+	public function makeCompressed()
 	{
-		writePng($this->data);
+		return makePng($this->data);
 	}
 }
 
