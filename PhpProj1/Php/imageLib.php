@@ -164,7 +164,7 @@ function makePng(&$data)
 
 	$dataBytes = call_user_func_array('array_merge', array_reverse($scanlines));
 	$rawData = call_user_func_array('pack', array_merge(array("C*"), $dataBytes));
-	$compressedData = gzdeflate($rawData);
+	$compressedData = gzcompress($rawData);
 	
 	$r->add(pack("C*", 137, 80, 78, 71, 13, 10, 26, 10)); // PNG header
 	
